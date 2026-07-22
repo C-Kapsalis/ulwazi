@@ -141,6 +141,17 @@ $nav-offset-left: 0.5rem;
   font-size: $font-size-p !important;
 }
 
+/* Additional resources / Get help panel: hover feedback for soft links */
+.p-help-links .p-list__item a {
+  display: block;
+  margin: 0 -0.5rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.p-help-links .p-list__item a:hover {
+  background-color: var(--vf-color-background-hover);
+}
+
 /* Compacting list elements */
 .p-list--unordered .p-list__item,
 .p-list--unordered .p-list__item:not(.task-list-item) p,
