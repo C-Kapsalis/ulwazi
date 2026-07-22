@@ -13,18 +13,18 @@
                         </ul>
                     </nav>
                     {% if help_links %}
-                    <div class="p-table-of-contents__section">
-                        <h2 class="p-table-of-contents__header">{{ help_links.title }}</h2>
-                        <ul class="p-table-of-contents__list p-list">
-                            {% for link in help_links.links %}
-                            <li class="p-table-of-contents__item">
-                                <a class="p-table-of-contents__link" href="{{ link.url }}"> {{ link.text }} </a>
-                            </li>
-                            {% endfor %}
+                    <div>
+                        <ul class="p-list">
+                        {% for link in help_links.links %}
+                        <li class="p-list__item">
+                            <a class="p-link--soft p-text--small 
+                    u-no-margin--bottom" href="{{ link.url }}">{{ link.text
+                    }}</a>
+                        </li>
+                        {% endfor %}
                         </ul>
                     </div>
                     {% endif %}
-
                 </div>
             </aside>
         {%- endif %}
