@@ -12,20 +12,24 @@
                             {% include "localtoc.html" %}
                         </ul>
                     </nav>
-                    {% if help_links %}
-                    <nav class="p-side-navigation" aria-label="{{ help_links.title }}">
-                        <ul class="p-side-navigation__list">
-                        {% for link in help_links.links %}
-                        <li class="p-side-navigation__item">
-                            <a class="p-side-navigation__link" href="{{ link.url }}">{{ link.text }} <i class="p-icon--external-link"></i></a>
-                        </li>
-                        {% endfor %}
-                        </ul>
-                    </nav>
-                    {% endif %}
-
                 </div>
             </aside>
         {%- endif %}
+
+        {% if help_links %}
+        <aside>
+            <nav class="p-side-navigation" aria-label="{{ help_links.title }}">
+                <ul class="p-side-navigation__list">
+                    {% for link in help_links.links %}
+                    <li class="p-side-navigation__item">
+                        <a class="p-side-navigation__link" href="{{ link.url }}">{{ link.text }} <i class="p-icon--external-link"></i></a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </nav>
+        </aside>
+        {% endif %}
+
+
     </div>
 </div>
