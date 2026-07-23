@@ -12827,6 +12827,28 @@ p {
   font-size: 0.875rem !important;
 }
 
+/* Align the standalone Get help / Additional resources aside with
+   the "On this page" content above it */
+.p-help-nav .p-side-navigation__link {
+  padding-left: 1rem;
+}
+
+/* When placed directly under the feedback button/icons row, give it the
+   same breathing room and section divider used between other stacked
+   sections in this panel (see .p-table-of-contents__section) */
+.p-help-nav--under-feedback {
+  margin-top: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--vf-color-border-low-contrast);
+}
+
+/* This variant sits next to the feedback button/icons, which have no
+   extra left indent - undo the +1rem added for the bottom-right variant
+   so it lines up with them instead of the TOC. */
+.p-help-nav--under-feedback .p-side-navigation__link {
+  padding-left: 0.5rem;
+}
+
 /* Compacting list elements */
 .p-list--unordered .p-list__item,
 .p-list--unordered .p-list__item:not(.task-list-item) p,
