@@ -53,3 +53,18 @@
   </label> -->
 </div>
 {% endif %}
+
+{% if help_links %}
+<aside>
+    <div class="p-help-links">
+        <h2 class="p-text--x-small-capitalised">{{ help_links.title }}</h2>
+        <ul class="p-list">
+        {% for link in help_links.links %}
+            <li class="p-list__item">
+                <a class="p-link--soft p-text--small u-no-margin--bottom" href="{{ link.url }}">{{ link.text }}</a>
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
+</aside>    
+{% endif %}
