@@ -12828,6 +12828,10 @@ p {
 }
 
 /* Additional resources / Get help panel: hover feedback for soft links */
+.p-help-links {
+  padding: 0 0.5rem;
+}
+
 .p-help-links .p-list__item a {
   display: block;
   margin: 0 -0.5rem;
