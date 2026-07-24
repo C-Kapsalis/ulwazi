@@ -34,5 +34,18 @@ document.addEventListener("DOMContentLoaded", function() {
       e.preventDefault();
       e.stopPropagation();
     });
+
+    // Links with no real destination (e.g. a group heading that only
+    // exists to disclose its children) toggle the same checkbox instead
+    // of following href="#".
+    var toggleLink = navItem.querySelector('.js-toggle-only-link');
+    if (toggleLink) {
+      toggleLink.addEventListener('click', function(e) {
+        checkbox.checked = !checkbox.checked;
+        update();
+        e.preventDefault();
+        e.stopPropagation();
+      });
+    }
   });
 });

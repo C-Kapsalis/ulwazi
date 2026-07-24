@@ -96,10 +96,33 @@ p {
 // Navigation offset constant
 $nav-offset-left: 0.5rem;
 
-.p-side-navigation__link {
+.p-side-navigation__link,
+.p-side-navigation__heading {
   padding-top: 0;
   padding-bottom: 0;
   padding-left: $nav-offset-left; // Override vanilla's 1.5rem for the top level
+}
+
+/* .p-icon--help only gets a width/height from Vanilla when nested inside a
+   real h1-h6 or .p-heading--X element - neither applies here, so without
+   this it has a background-image and nothing to paint it in, rendering as
+   nothing. The surrounding a.p-side-navigation__link already gets
+   display:flex/align-items:center from the existing rule below, so this
+   only needs to supply size, not vertical alignment. */
+.p-side-navigation__link .p-icon--help {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin-right: 0.25rem;
+}
+
+/* Divider above the Get help group, matching the same hairline convention
+   used elsewhere in this theme (e.g. .p-table-of-contents__section) */
+.p-help-nav-group--divided {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--vf-color-border-low-contrast);
 }
 
 // Add incremental padding for each nesting level
@@ -139,12 +162,6 @@ $nav-offset-left: 0.5rem;
 
 .p-top__link {
   font-size: $font-size-p !important;
-}
-
-/* Align the standalone Get help / Additional resources aside with
-   the "On this page" content above it */
-.p-help-nav .p-side-navigation__link {
-  padding-left: 1rem;
 }
 
 /* When placed directly under the feedback button/icons row, give it the
