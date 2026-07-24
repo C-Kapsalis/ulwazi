@@ -3,15 +3,24 @@
 {{ expandable_navigation_tree }}
 
 {% if help_links %}
-<aside>
-    <nav class="p-side-navigation" aria-label="{{ help_links.title }}">
+<ul class="p-side-navigation__list">
+    <li class="p-side-navigation__item has-children">
+        <div class="nav-item" data-checkbox="help-links-toggle">
+            <input type="checkbox" class="toctree-checkbox" id="help-links-toggle" name="help-links-toggle" role="switch">
+            <label class="p-side-navigation__link" for="help-links-toggle">
+                <i class="p-icon--help"></i> {{ help_links.title }}
+                <span><i class="p-icon--chevron-down"></i><i class="p-icon--chevron-up"></i></span>
+            </label>
+        </div>
         <ul class="p-side-navigation__list">
             {% for link in help_links.links %}
-            <li class="p-side-navigation__item">
-                <a class="p-side-navigation__link" href="{{ link.url }}">{{ link.text }} <i class="p-icon--external-link"></i></a>
+            <li class="p-side-navigation__item hidden">
+                <div class="nav-item">
+                    <a class="p-side-navigation__link" href="{{ link.url }}">{{ link.text }} <i class="p-icon--external-link"></i></a>
+                </div>
             </li>
             {% endfor %}
         </ul>
-    </nav>
-</aside>
+    </li>
+</ul>
 {% endif %}
