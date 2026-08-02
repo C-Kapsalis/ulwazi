@@ -163,24 +163,29 @@ def get_navigation_tree(toctree_html: str) -> str:
     return str(soup)
 
 
-def add_help_links(navigation_html: str, help_links: dict[str, Any] | None) -> str:
-    """Append the conf.py-configured "Get help" links after the navigation tree.
+def render_help_links(help_links: dict[str, Any] | None) -> str:
+    """Render the conf.py-configured "Get help" section.
 
     Built directly here, rather than as toctree entries, so the links keep their
     own p-link--soft styling instead of picking up the p-side-navigation__link
-    styling get_navigation_tree() gives every real toctree entry above.
+    styling get_navigation_tree() gives every real toctree entry. Returned as its
+    own fragment (rendered as a sibling of the sticky nav, not appended inside
+    it) since content inside the nav is clipped by its own overflow-y: auto,
+    which would hide the optional help icon hanging left of the heading.
     """
     if not help_links:
-        return navigation_html
+        return ""
 
-    soup = BeautifulSoup(navigation_html, "html.parser")
+    soup = BeautifulSoup("", "html.parser")
 
     container = soup.new_tag(
         "div", attrs={"class": "p-help-links p-help-links--match-globaltoc"}
     )
 
     heading = soup.new_tag("h2", attrs={"class": "p-text--x-small-capitalised"})
-    heading.string = help_links["title"]
+    icon = soup.new_tag("i", attrs={"class": "p-icon--help", "aria-hidden": "true"})
+    heading.append(icon)
+    heading.append(help_links["title"])
     container.append(heading)
 
     link_list = soup.new_tag("ul", attrs={"class": "p-list"})
@@ -200,6 +205,5 @@ def add_help_links(navigation_html: str, help_links: dict[str, Any] | None) -> s
 
     aside = soup.new_tag("aside")
     aside.append(container)
-    soup.append(aside)
 
-    return str(soup)
+    return str(aside)

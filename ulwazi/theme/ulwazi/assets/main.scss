@@ -153,6 +153,28 @@ $nav-offset-left: 0.5rem;
   margin-left: 0;
   padding-left: 0;
   padding-right: 0;
+  position: relative;
+}
+
+/* The optional help icon hangs in the gutter to the left of the heading
+   instead of sitting inline before it, so the heading text keeps the exact
+   same start position as .globaltoc-caption/"On this page" above it. This
+   only works because help_links_html is rendered as a sibling of the sticky
+   nav (see sidebar-primary.html), not inside it - content inside the nav is
+   clipped by its own overflow-y: auto, which would hide anything hanging
+   outside the heading's own bounds. Width and height override Vanilla's own
+   h2 [class*='p-icon'] rule, which shrinks icons nested in headings down to
+   the font's x-height. */
+.p-help-links h2 .p-icon--help {
+  position: absolute;
+  left: -1.25rem;
+  /* .p-text--x-small-capitalised has its own padding-top (0.375rem) pushing
+     the text down within the heading's box - center against the text itself,
+     not the box, by nudging down half that padding. */
+  top: calc(50% + 0.1875rem);
+  transform: translateY(-50%);
+  width: 0.75rem;
+  height: 0.75rem;
 }
 
 /* Sphinx's toctree :caption:, promoted to a real <h2> by navigation.py so it

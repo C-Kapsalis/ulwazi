@@ -29,7 +29,7 @@ from sphinx.application import Sphinx
 from sphinx.config import Config
 from sphinx.util.typing import ExtensionMetadata
 
-from ulwazi.navigation import add_help_links, get_navigation_tree
+from ulwazi.navigation import get_navigation_tree, render_help_links
 from ulwazi.tabs import convert_tabs
 
 
@@ -118,8 +118,7 @@ def _compute_navigation_tree(context: dict[str, Any]) -> str:
     else:
         toctree_html = ""
 
-    navigation_tree = get_navigation_tree(toctree_html)
-    return add_help_links(navigation_tree, context.get("help_links"))
+    return get_navigation_tree(toctree_html)
 
 
 def apply_heading_classes(body_html: str) -> str:
@@ -423,6 +422,7 @@ def _html_page_context(
 ) -> None:
     # Values computed from page-level context.
     context["expandable_navigation_tree"] = _compute_navigation_tree(context)
+    context["help_links_html"] = render_help_links(context.get("help_links"))
 
     if "toc" in context:
         context["toc"] = modify_local_toc(context["toc"])
