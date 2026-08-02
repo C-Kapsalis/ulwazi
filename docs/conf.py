@@ -218,7 +218,7 @@ html_context = {
         ],
     },
     "help_links": {
-        "title": "Additional resources",
+        "title": "Get help",
         "links": [
             {"text": "Ask on the forum", "url": "https://discourse.ubuntu.com"},
             {"text": "Report a doc issue", "url": "https://github.com/canonical/ulwazi/issues/new",}
