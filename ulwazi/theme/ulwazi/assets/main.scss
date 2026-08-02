@@ -141,36 +141,44 @@ $nav-offset-left: 0.5rem;
   font-size: $font-size-p !important;
 }
 
-/* Additional resources / Get help panel: hover feedback for soft links */
-.p-help-links {
-  padding: 0 0.5rem;
-}
+/* Additional resources / Get help panel */
 
-/* Reset the heading's own margin/indent so this block's 0.5rem padding is
-   the only source of horizontal offset, regardless of which surrounding
-   context (TOC section, feedback icon row, primary raw-html nav) it sits
-   in - each nudges a bare heading differently otherwise. */
+/* Reset the heading's own margin/indent so it sits flush, matching
+   .globaltoc-caption, regardless of which surrounding context (TOC section,
+   feedback icon row, primary raw-html nav) it sits in - each nudges a bare
+   heading differently otherwise. Padding-right is included since the primary
+   raw-html nav context (.p-side-navigation--raw-html h2) applies it too,
+   meant for nav-link flex layout, not a static heading. */
 .p-help-links h2 {
   margin-left: 0;
   padding-left: 0;
+  padding-right: 0;
+}
+
+/* Sphinx's toctree :caption:, promoted to a real <h2> by navigation.py so it
+   matches the "On this page" heading style. It sits as a bare sibling of the
+   primary raw-html side-nav's <ul>, so strip the .p-side-navigation--raw-html
+   h2 link-flex padding Vanilla applies there - that padding is meant for nav
+   links, not a static heading. */
+h2.globaltoc-caption {
+  padding: 0;
+}
+
+.p-help-links > ul {
+  padding: 0 0.5rem;
 }
 
 .p-help-links .p-list__item {
-  /* the anchor below already provides this padding for the hover
-     highlight - Vanilla's own base .p-list__item rule would otherwise
-     stack another 0.25rem on top of it, doubling the gap between items */
+  /* the anchor below already provides this padding - Vanilla's own base
+     .p-list__item rule would otherwise stack another 0.25rem on top of it,
+     doubling the gap between items */
   padding-top: 0;
   padding-bottom: 0;
 }
 
 .p-help-links .p-list__item a {
   display: block;
-  margin: 0 -0.5rem;
-  padding: 0.25rem 0.5rem;
-}
-
-.p-help-links .p-list__item a:hover {
-  background-color: var(--vf-color-background-hover);
+  padding: 0.25rem 0;
 }
 
 /* This variant sits directly under the global nav tree, whose items use

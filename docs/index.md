@@ -72,6 +72,7 @@ This is a test about SCSS propagation.
 
 ```{toctree}
 :hidden:
+:caption: Caption verification test
 
 Home <self>
 content/test
