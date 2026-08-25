@@ -93,6 +93,12 @@ p {
   margin: 0;
 }
 
+main {
+  font-weight: $font-weight-p;
+  font-size: $font-size-p;
+  line-height: $font-line-height-p;
+}
+
 // Navigation offset constant
 $nav-offset-left: 0.5rem;
 
@@ -100,6 +106,8 @@ $nav-offset-left: 0.5rem;
   padding-top: 0;
   padding-bottom: 0;
   padding-left: $nav-offset-left; // Override vanilla's 1.5rem for the top level
+  font-size: $font-size-p;
+  line-height: 1.5rem;
 }
 
 // Add incremental padding for each nesting level
@@ -132,8 +140,6 @@ $nav-offset-left: 0.5rem;
 .p-side-navigation__item > .nav-item > a.p-side-navigation__link {
   display: flex;
   align-items: center;
-  height: auto;        /* in case a fixed height is causing the offset */
-  min-height: 32px;    /* keeps single-line items nicely sized */
   white-space: normal; /* allow multi-line labels */
 }
 
