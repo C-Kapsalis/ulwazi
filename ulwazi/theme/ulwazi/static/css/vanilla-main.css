@@ -12848,6 +12848,20 @@ main {
   min-height: 32px;
 }
 
+.p-side-navigation--raw-html .caption {
+  font-weight: 550;
+  color: var(--vf-color-text-default);
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+  padding: 0.25rem 0 0.25rem 0.5rem;
+  margin: 0.5rem 0 0.25rem;
+}
+
+.p-side-navigation--raw-html .caption .caption-text {
+  font-weight: inherit;
+  color: inherit;
+}
+
 .p-table-of-contents__list .p-table-of-contents__link {
   padding-top: 0;
   padding-bottom: 0;
