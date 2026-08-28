@@ -58,6 +58,16 @@ If you change dependencies, you will need to re-build the virtual environment en
 That can be done by manually deleting the `.venv` folder or with the `make clean`
 command.
 
+## Metadata and SEO
+
+Every page gets a complete, working set of SEO/social-preview metadata
+automatically -- `<title>`, `<meta name="description">`, Open Graph tags,
+`rel="canonical"`, and favicon. **You never need to add anything by hand.**
+Overriding a page's title or description for social previews is optional and
+only needed for pages you want to promote with custom text (e.g. a landing
+page). See [the contribution guide](docs/content/contribute.rst#page-metadata-and-seo)
+for defaults and override syntax.
+
 ## Contributing
 
 The theme files are located in the `ulwazi` folder:

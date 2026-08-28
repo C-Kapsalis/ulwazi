@@ -48,8 +48,11 @@ make test-coverage # Run tests and generate coverage report
 Available tests:
 
 - **test_site_validation.py**: Validates built HTML for broken assets (missing CSS, JS, images)
-- **test_pdf_generation.py**: Verifies PDF generation produces expected output file (slow test)
-- **test_scss_propagation.py**: Tests SCSS compilation and style propagation to rendered HTML using Playwright (color check is a slow test)
+- **test_pdf_generation.py**: Verifies PDF generation produces expected output file
+- **test_scss_propagation.py**: Tests SCSS compilation and style propagation to rendered HTML using Playwright
+- **test_seo_metadata.py**: Verifies `<title>`, description, canonical link, favicon, and Open Graph
+  tags on built pages. Also checks that per-page `og:*`/description overrides work. See
+  `docs/content/tests/seo-metadata.md` for more details.
 
 ### Cleaning
 
@@ -120,6 +123,7 @@ tests/                       # Test scripts
 - **[Makefile](Makefile)**: Build automation and common tasks
 - **[ulwazi/**init**.py](ulwazi/**init**.py)**: Theme entry point, `_html_page_context` for HTML modification hooks
 - **[ulwazi/theme/ulwazi/layout.html](ulwazi/theme/ulwazi/layout.html)**: Base page layout template
+- **[docs/conf.py](docs/conf.py)**: Sample docs Sphinx config
 
 ## Development Workflow
 
@@ -201,6 +205,26 @@ make test
 - **Build Artifacts**: `build/`, `*.egg-info/`, `.venv/`, `docs/_build/` are gitignored
 - **Node Modules**: Required for Vanilla Framework compilation
 - **Auto-rebuild**: `make run` watches content changes but NOT theme changes
+- **Metadata/SEO**: `<title>` suffix, `rel="canonical"`, favicon link, and Open Graph tags
+  (`og:title`, `og:description`, `og:image`, etc.) are all generated automatically via
+  `sphinxext-opengraph` (declared in `docs/conf.py` `extensions`, and in `pyproject.toml`
+  under the `docs` dependency group) plus the `layout.html` template. Per-page `og:*`
+  overrides are plain top-level fields (reST bibliographic field / MyST front matter
+  key) placed before the title -- e.g. `:og:title: ...` or `og:title: "..."` -- read
+  directly by `sphinxext-opengraph`'s own override mechanism. **Do not** add a
+  `property=` prefix; that's a misconception carried over from the generic docutils
+  `.. meta::` directive and is unnecessary once `sphinxext-opengraph` is installed --
+  it always renders `property="og:..."` regardless. The plain page description
+  (`<meta name="description">`) is a separate setting: use `.. meta:: :description:`
+  (reST) or nest it under `myst.html_meta` (MyST) -- `description` alone is not a
+  recognised bibliographic field. See `docs/content/contribute.rst` and the RST/MyST
+  cheat sheets for working examples. Do not remove `sphinxext-opengraph` or the
+  `favicon_url`/`pageurl`/`docstitle` references in `layout.html` without re-verifying
+  metadata output in the built HTML.
+- **Sphinx context variable gotcha**: use `favicon_url` in templates, not `favicon`
+  (the latter is a stale sphinx-basic-ng convention that Sphinx 7.4+ no longer
+  populates); `favicon_url` is already a fully resolved URL and must not be passed
+  through `pathto()` again.
 
 ## Testing Locations
 
