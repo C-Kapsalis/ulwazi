@@ -330,7 +330,6 @@ myst_enable_extensions = {"colon_fence", "deflist", "substitution", "tasklist"}
 #       - sphinx_copybutton
 #       - sphinx_design
 #       - sphinx_reredirects
-#       - sphinx_tabs.tabs
 #       - sphinxcontrib.jquery
 #       - sphinxext.opengraph
 #       - terminal-output
@@ -351,7 +350,6 @@ extensions = [
     "canonical_sphinx_config",
     "myst_parser",
     "sphinxcontrib.jquery",
-    "sphinx_tabs.tabs",
     "sphinx_design",
 ]
 
