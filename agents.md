@@ -6,8 +6,8 @@ Ulwazi is a Sphinx theme based on Canonical's [Vanilla Framework](https://vanill
 It provides both generic Vanilla styling and Canonical-specific theming for documentation projects.
 
 **Tech Stack**: Python, Sphinx, Jinja2, Vanilla Framework (SCSS), JavaScript
-**License**: GPL-3.0-only
-**Python**: >=`3.10` (managed by [uv](https://docs.astral.sh/uv/))
+**License**: GPL-3.0
+**Python**: >=`3.8` (`3.11` is recommended)
 
 ## Common Tasks
 
@@ -39,20 +39,15 @@ in its terminal.
 ### Testing
 
 ```bash
-make test          # Run all tests (excluding PDF builds)
-make test-fast     # Run fast tests (excluding PDF builds)
-make test-slow     # Run all tests (including PDF builds)
-make test-coverage # Run tests and generate coverage report
+make test         # Run all tests
 ```
 
 Available tests:
 
 - **test_site_validation.py**: Validates built HTML for broken assets (missing CSS, JS, images)
-- **test_pdf_generation.py**: Verifies PDF generation produces expected output file
-- **test_scss_propagation.py**: Tests SCSS compilation and style propagation to rendered HTML using Playwright
-- **test_seo_metadata.py**: Verifies `<title>`, description, canonical link, favicon, and Open Graph
-  tags on built pages. Also checks that per-page `og:*`/description overrides work. See
-  `docs/content/tests/seo-metadata.md` for more details.
+- **test_pdf_generation.py**: Verifies PDF generation produces expected output file _(slow)_
+- **test_scss_propagation.py**: Tests SCSS compilation and style propagation to rendered HTML using Playwright _(partially slow)_
+- **test_python_versions.py**: Builds the theme and sample docs on every supported Python version _(slow)_
 
 ### Cleaning
 
@@ -175,7 +170,8 @@ When all testing is done, make sure to terminate the `make run` command in the o
 Run tests to avoid regression:
 
 ```bash
-make test
+make test         # fast tests only
+make test-all     # all tests (fast and slow, including PDF and Python version tests)
 ```
 
 ## Code Conventions
@@ -231,7 +227,8 @@ make test
 
 - **Sample docs**: [docs/](docs/) - comprehensive test content
 - **Cheatsheet pages**: [docs/content/rst-cheat-sheet.rst](docs/content/rst-cheat-sheet.rst) and [docs/content/myst-cheat-sheet.md](docs/content/myst-cheat-sheet.md) - comprehensive examples of all supported blocks (admonitions, code blocks, tables, etc.). Use these to verify theme rendering. When adding new features, update both cheatsheets with equivalent examples in similar structure.
-- **Test scripts**: [tests/](tests/) - validation and PDF generation tests
+- **Test scripts**: [tests/](tests/) - validation, PDF generation, SCSS propagation, and Python version compatibility tests
+- **Tests documentation**: [docs/content/tests/](docs/content/tests/) - documentation for the test suite, including [Python version compatibility](docs/content/tests/python-versions.md)
 - **Built output**: [docs/\_build/](docs/_build/) - inspect generated HTML
 
 ## Syntax
