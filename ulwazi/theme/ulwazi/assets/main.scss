@@ -1,20 +1,29 @@
+// Load Vanilla
 @import "vanilla-framework";
 
 // Custom SCSS and overrides before we render Vanilla
 @import "vanilla-settings";
 
+// Render Vanilla
 @include vanilla;
 
+// Add Ulwazi SCSS
 @import "ulwazi";
 
+// Icons
+// @import 'patterns_icons';
 @include vf-p-icons;
 
+// include common styles shared by all icons
 @include vf-p-icons-common;
 
+// include only the icons that we use
 @include vf-p-icon-edit;
 @include vf-p-icon-show;
 @include vf-p-icon-highlight-on;
 @include vf-p-icon-highlight-off;
+
+// Custom styles
 
 .heading-test-scss{
   color: purple;
@@ -27,6 +36,7 @@
   align-items: center;
   justify-content: flex-end;
   margin-left: auto;
+  /* Ensures the arrow is pushed to the right in flex containers */
 }
 
 .arrow-toggle .icon,
@@ -40,6 +50,7 @@
   text-align: right;
 }
 
+// typography styles
 .p-heading--1 {
   font-weight: $font-weight-h1;
   font-size: $font-size-h1;
@@ -88,6 +99,7 @@ main {
   line-height: $font-line-height-p;
 }
 
+// Navigation offset constant
 $nav-offset-left: 0.5rem;
 
 .p-side-navigation__link {
@@ -98,6 +110,7 @@ $nav-offset-left: 0.5rem;
   line-height: 1.5rem;
 }
 
+// Add incremental padding for each nesting level
 .p-side-navigation__item .p-side-navigation__item .p-side-navigation__link {
   padding-left: calc(1.5rem + $nav-offset-left); // Level 2
 }
@@ -137,11 +150,11 @@ $nav-offset-left: 0.5rem;
   padding-bottom: 0;
 }
 
-/* Keeps wrapped multi-line labels vertically centered. */
+/* Vertically center menu text inside the highlighted row (works with wrapping) */
 .p-side-navigation__item > .nav-item > a.p-side-navigation__link {
   display: flex;
   align-items: center;
-  white-space: normal;
+  white-space: normal; /* allow multi-line labels */
 }
 
 .p-top__link {
@@ -220,6 +233,7 @@ h2.globaltoc-caption {
   padding-bottom: 0;
 }
 
+/* Compacting list elements */
 .p-list--unordered .p-list__item,
 .p-list--unordered .p-list__item:not(.task-list-item) p,
 .p-list--ordered .p-list__item,
@@ -228,6 +242,7 @@ h2.globaltoc-caption {
   padding-bottom: 0;
 }
 
+/* Ensure marker is same size as list text */
 .p-list--ordered .p-list__item::marker {
   font-size: $font-size-p;
 }
@@ -241,12 +256,13 @@ samp:not(h1 samp):not(h2 samp):not(h3 samp):not(h4 samp):not(h5 samp):not(h6 sam
   font-size: $font-size-p !important;
 }
 
-/* Admonitions */
+/* Admonitions  */
 .p-notification__title {
   padding-top: 0.5rem !important;
   padding-bottom: 0.5rem !important;
 }
 
+/* Definitions*/
 dt {
   font-weight: 550;
   font-size: $font-size-p;
