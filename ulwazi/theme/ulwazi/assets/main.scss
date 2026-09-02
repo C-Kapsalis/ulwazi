@@ -1,29 +1,20 @@
-// Load Vanilla
 @import "vanilla-framework";
 
 // Custom SCSS and overrides before we render Vanilla
 @import "vanilla-settings";
 
-// Render Vanilla
 @include vanilla;
 
-// Add Ulwazi SCSS
 @import "ulwazi";
 
-// Icons
-// @import 'patterns_icons';
 @include vf-p-icons;
 
-// include common styles shared by all icons
 @include vf-p-icons-common;
 
-// include only the icons that we use
 @include vf-p-icon-edit;
 @include vf-p-icon-show;
 @include vf-p-icon-highlight-on;
 @include vf-p-icon-highlight-off;
-
-// Custom styles
 
 .heading-test-scss{
   color: purple;
@@ -36,7 +27,6 @@
   align-items: center;
   justify-content: flex-end;
   margin-left: auto;
-  /* Ensures the arrow is pushed to the right in flex containers */
 }
 
 .arrow-toggle .icon,
@@ -50,7 +40,6 @@
   text-align: right;
 }
 
-// typography styles
 .p-heading--1 {
   font-weight: $font-weight-h1;
   font-size: $font-size-h1;
@@ -99,7 +88,6 @@ main {
   line-height: $font-line-height-p;
 }
 
-// Navigation offset constant
 $nav-offset-left: 0.5rem;
 
 .p-side-navigation__link {
@@ -110,7 +98,6 @@ $nav-offset-left: 0.5rem;
   line-height: 1.5rem;
 }
 
-// Add incremental padding for each nesting level
 .p-side-navigation__item .p-side-navigation__item .p-side-navigation__link {
   padding-left: calc(1.5rem + $nav-offset-left); // Level 2
 }
@@ -150,11 +137,11 @@ $nav-offset-left: 0.5rem;
   padding-bottom: 0;
 }
 
-/* Vertically center menu text inside the highlighted row (works with wrapping) */
+/* Keeps wrapped multi-line labels vertically centered. */
 .p-side-navigation__item > .nav-item > a.p-side-navigation__link {
   display: flex;
   align-items: center;
-  white-space: normal; /* allow multi-line labels */
+  white-space: normal;
 }
 
 .p-top__link {
@@ -163,20 +150,14 @@ $nav-offset-left: 0.5rem;
 
 /* Additional resources / Get help panel */
 
-/* Reset the heading's own margin/indent so it sits flush, matching
-   .globaltoc-caption, regardless of which surrounding context (TOC section,
-   feedback icon row, primary raw-html nav) it sits in - each nudges a bare
-   heading differently otherwise. Padding-right is included since the primary
-   raw-html nav context (.p-side-navigation--raw-html h2) applies it too,
-   meant for nav-link flex layout, not a static heading. */
+/* Flush like .globaltoc-caption, overriding padding inherited from .p-side-navigation--raw-html h2. */
 .p-help-links h2 {
   margin-left: 0;
   padding-left: 0;
   padding-right: 0;
 }
 
-/* Separate help from the document navigation. The icon sits outside the
-   heading's text flow, keeping the "Get help" label aligned with captions. */
+/* Visual separator between help links and the document nav. */
 .p-help-links--match-globaltoc {
   border-top: 1px solid var(--vf-color-border-default);
   margin-top: 1rem;
@@ -202,11 +183,7 @@ $nav-offset-left: 0.5rem;
   overflow: visible;
 }
 
-/* Sphinx's toctree :caption:, promoted to a real <h2> by navigation.py so it
-   matches the "On this page" heading style. It sits as a bare sibling of the
-   primary raw-html side-nav's <ul>, so strip the .p-side-navigation--raw-html
-   h2 link-flex padding Vanilla applies there - that padding is meant for nav
-   links, not a static heading. */
+/* Sphinx's toctree :caption:, promoted to <h2> by navigation.py; strips the padding it inherits from .p-side-navigation--raw-html h2. */
 h2.globaltoc-caption {
   padding: 0;
 }
@@ -216,33 +193,25 @@ h2.globaltoc-caption {
 }
 
 .p-help-links .p-list__item {
-  /* the anchor below already provides this padding - Vanilla's own base
-     .p-list__item rule would otherwise stack another 0.25rem on top of it,
-     doubling the gap between items */
+  /* the anchor's own padding already handles this - avoids doubling Vanilla's default gap */
   padding-top: 0;
   padding-bottom: 0;
 }
 
-/* Negative margin cancels .p-help-links > ul's own 0.5rem inset so the
-   hover background below can bleed to the same true edge-to-edge width as
-   the real nav links' hover box; the matching padding keeps the text itself
-   at the same visual position as if this margin/padding pair weren't here. */
+/* Cancels the ul's 0.5rem inset so hover bg spans edge-to-edge; padding keeps text position unchanged. */
 .p-help-links .p-list__item a {
   display: block;
   margin: 0 -0.5rem;
   padding: 0.25rem 0.5rem;
 }
 
-/* Match the real nav links' hover box exactly, background and color both -
-   the same box, same darkened default text, as the rest of the Global ToC. */
+/* Match the real nav links' hover background and text color exactly. */
 .p-help-links .p-list__item a:hover {
   background: var(--vf-color-background-hover);
   color: var(--vf-color-text-default);
 }
 
-/* This variant sits directly under the global nav tree, whose items use
-   .p-side-navigation__item/.nav-item at a 32px row height, not
-   .p-list__item's padding - match that rhythm instead of our own default */
+/* Match the global nav's 32px row height, not .p-list__item's own padding. */
 .p-help-links--match-globaltoc .p-list__item a {
   display: flex;
   align-items: center;
@@ -251,7 +220,6 @@ h2.globaltoc-caption {
   padding-bottom: 0;
 }
 
-/* Compacting list elements */
 .p-list--unordered .p-list__item,
 .p-list--unordered .p-list__item:not(.task-list-item) p,
 .p-list--ordered .p-list__item,
@@ -260,7 +228,6 @@ h2.globaltoc-caption {
   padding-bottom: 0;
 }
 
-/* Ensure marker is same size as list text */
 .p-list--ordered .p-list__item::marker {
   font-size: $font-size-p;
 }
@@ -274,13 +241,12 @@ samp:not(h1 samp):not(h2 samp):not(h3 samp):not(h4 samp):not(h5 samp):not(h6 sam
   font-size: $font-size-p !important;
 }
 
-/* Admonitions  */
+/* Admonitions */
 .p-notification__title {
   padding-top: 0.5rem !important;
   padding-bottom: 0.5rem !important;
 }
 
-/* Definitions*/
 dt {
   font-weight: 550;
   font-size: $font-size-p;
