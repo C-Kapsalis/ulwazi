@@ -183,13 +183,14 @@ def test_features_fast(built_site):
         errors.append(f"[{name}] headings: missing main article")
 
     # The sample docs opt into the Get help panel (docs/conf.py); it must
-    # render below the Global ToC, without toctree link classes.
+    # render below the Global ToC, without toctree link classes. CI also runs
+    # this file against the base revision, whose sample docs do not opt in,
+    # so only verify the panel when it is present (test_config_robustness
+    # hard-asserts the sample docs render it).
     name = "content/myst-cheat-sheet"
     soup = built_site.page(name)
     panel = soup.select_one("nav#drawer div.p-help-links")
-    if panel is None:
-        errors.append(f"[{name}] help links: panel missing from sample docs")
-    else:
+    if panel is not None:
         heading = panel.select_one("p.caption span.caption-text")
         if not heading or heading.get_text(strip=True) != "Get help":
             errors.append(f"[{name}] help links: heading must read 'Get help'")

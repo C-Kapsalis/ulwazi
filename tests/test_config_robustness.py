@@ -175,6 +175,16 @@ def _check_sample_docs() -> None:
     toc_text = _local_toc_text(CHEAT_SHEET_PATH.read_text(encoding="utf-8"))
     assert "H4 heading" in toc_text, "H4 heading missing from local TOC"
     assert "H5 heading" not in toc_text, "H5 heading should not appear in local TOC"
+    # The sample docs opt into the Get help panel (docs/conf.py): it must
+    # render below the Global ToC with the configured links.
+    soup = BeautifulSoup(CHEAT_SHEET_PATH.read_text(encoding="utf-8"), "html.parser")
+    panel = soup.select_one("nav#drawer div.p-help-links")
+    assert panel is not None, "Get help panel missing from the sample docs"
+    heading = panel.select_one("p.caption span.caption-text")
+    assert heading is not None and heading.get_text(strip=True) == "Get help"
+    hrefs = [link.get("href") for link in panel.select("a.p-help-links__link")]
+    assert "https://discourse.ubuntu.com/c/documentation/7" in hrefs
+    assert "https://github.com/canonical/ulwazi/issues/new" in hrefs
 
 
 def _check_feedback_defaults(output: Path) -> None:
