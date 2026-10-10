@@ -80,7 +80,7 @@ site:
       - tests/test_features.py::test_features_fast
       - tests/test_features.py::test_features_slow
       - tests/test_config_robustness.py::test_config_robustness
-      - tests/test_config_robustness.py::test_help_links_invalid_config
+      - tests/test_config_robustness.py::test_help_links_invalid_config[help_links0-'links']
       - tests/test_config_robustness.py::test_help_links_theme_only_loading
   - name: Sampled local assets and control wiring
     source: representative built pages (home, both cheat sheets, code headings, search)
