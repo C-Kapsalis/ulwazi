@@ -361,6 +361,16 @@ button.copybtn:hover {
   color: var(--vf-color-text-default);
 }
 
+body.is-dark .highlight,
+body.is-dark code:not(pre code) {
+  background-color: $colors--dark-theme--background-code;
+}
+
+a code:not(pre code),
+body.is-dark a code:not(pre code) {
+  background-color: transparent;
+}
+
 // A trailing block element (blockquote, list, table, nested admonition)
 // keeps its own bottom margin, showing as a blank line inside the box.
 .p-notification__message > :last-child {
@@ -419,6 +429,36 @@ button.copybtn:hover {
   width: 100%;
 }
 
+/*
+  Extension compatibility styling.
+*/
+
+// sphinx_config_options targets Furo. Remove these rules once the extension
+// is theme-agnostic.
+.configoption {
+  // The extension draws the separator between options with Furo's
+  // --color-table-border, which Ulwazi doesn't define (so no line renders).
+  // Use Vanilla's low-contrast separator, as in divided lists.
+  --color-table-border: var(--vf-color-border-low-contrast);
+
+  // The chevron is a sprite-based SVG
+  // (<i class="icon"><svg><use href="#svg-arrow-right"/></svg></i>) sized by
+  // Furo's global .icon rules. Without a size it falls back to 300x150 (a
+  // huge chevron and horizontal overflow), so size it to Vanilla's icon size.
+  // The extension also pins it to rotate(90deg), so it always points down.
+  // Follow Vanilla's accordion instead: right when collapsed, down when open.
+  .basicinfo .anchor .icon svg {
+    width: $default-icon-size;
+    height: $default-icon-size;
+    transform: none;
+    @include vf-transition($property: transform, $duration: fast);
+  }
+
+  &:has(> .details:not([hidden])) .basicinfo .anchor .icon svg {
+    transform: rotate(90deg);
+  }
+}
+
 
 // Disable tooltip for copy buttons only
 .copybtn.o-tooltip--left[data-tooltip]::before,
@@ -468,7 +508,9 @@ div.terminal > div.input > button.copybtn svg {
 }
 
 .p-search-box .p-search-box__button {
-  background-color: $color-brand-orange !important;
+  // Matches the feedback button's darker accent for visual consistency,
+  // though the icon-only button only needs the lower 3:1 non-text ratio.
+  background-color: $color-accent-orange !important;
   border-left: none !important;
   height: calc(2rem - 1.5px) !important;
   margin: 0 0 1.5px 0 !important;
@@ -479,8 +521,9 @@ div.terminal > div.input > button.copybtn svg {
     filter: brightness(0) invert(1); // Makes the icon white
   }
 
-  &:hover {
-    background-color: var(--ulwazi-color-brand-hover) !important;
+  &:hover,
+  &:active {
+    background-color: $color-accent-orange-hover !important;
   }
 }
 
@@ -488,7 +531,8 @@ div.terminal > div.input > button.copybtn svg {
   font-size: 0.875rem !important;
   padding-top: calc(0.25rem - 1.5px) !important;
   padding-bottom: calc(0.25rem - 1.5px) !important;
-  padding-left: 0.5rem !important;
+  // Keep the search text aligned with the sidebar nav link text
+  padding-left: $nav-offset-left !important;
 }
 
 .p-search-box__reset {
@@ -534,53 +578,53 @@ kbd.compound {
   Feedback section.
 */
 
-// Orange button variant for the "Give feedback" call-to-action.
-// Inherits base styles from p-button--positive.
-.p-button--orange {
-  background-color: $color-brand-orange;
-  border-color: $color-brand-orange;
-  color: #fff;
-  font-size: $font-size-p;
-  font-weight: bold;
-
-  &:visited {
-    color: #fff;
-  }
-
-  &:hover {
-    background-color: adjust-color($color-brand-orange, $lightness: -10%);
-    border-color: adjust-color($color-brand-orange, $lightness: -10%);
-  }
-
-  &:active,
-  &[aria-pressed=true],
-  &[aria-selected=true],
-  &[aria-expanded=true] {
-    background-color: adjust-color($color-brand-orange, $lightness: -15%);
-    border-color: adjust-color($color-brand-orange, $lightness: -15%);
-    transition-duration: 0s;
-  }
-
-  &:disabled,
-  &.is-disabled {
-    background-color: $color-brand-orange;
-    border-color: $color-brand-orange;
-  }
-
-  &:focus-visible {
-    outline: 0.1875rem solid adjust-color($color-brand-orange, $lightness: -20%);
-    outline-offset: -0.1875rem;
-  }
-}
-
 // Icon links (edit / view-source) aligned next to the Give feedback button.
 .content-icon-container {
   gap: 0.5rem; // uniform spacing: button→icon and icon→icon are equal
 
   // Neutralise Vanilla's default button margins so gap alone controls spacing.
-  .p-button--positive {
+  .p-button {
     margin-bottom: 0;
     margin-right: 0;
+  }
+
+  // Feedback button: darker orange with white text for WCAG AA contrast
+  // (5.27:1 normal, 5.96:1 hover/active against #ffffff). Same in both
+  // light and dark themes -- the shade is dark enough to hold contrast
+  // against either background, so no theme-scoped overrides are needed.
+  .p-button--orange {
+    background-color: $color-accent-orange;
+    border-color: $color-accent-orange;
+    color: $color-x-light;
+    font-size: $font-size-p;
+    font-weight: bold;
+
+    &:visited {
+      color: $color-x-light;
+    }
+
+    &:hover {
+      background-color: $color-accent-orange-hover;
+      border-color: $color-accent-orange-hover;
+      color: $color-x-light;
+    }
+
+    &:active,
+    &[aria-pressed=true],
+    &[aria-selected=true],
+    &[aria-expanded=true] {
+      background-color: $color-accent-orange-hover;
+      border-color: $color-accent-orange-hover;
+      color: $color-x-light;
+      transition-duration: 0s;
+    }
+
+    &:disabled,
+    &.is-disabled {
+      background-color: $color-accent-orange;
+      border-color: $color-accent-orange;
+      color: $color-x-light;
+    }
   }
 
   .edit-this-page,

@@ -6,6 +6,7 @@ a Vanilla Framework-based theme built for Canonical’s
 
 - Want to help? See {doc}`content/contribute`.
 - Want to use it? Start with [Use Ulwazi in your documentation](https://documentation.ubuntu.com/sphinx-stack/latest/contribute/test-ulwazi-theme/).
+- Want the full list of settings and their defaults? See {doc}`content/configuration`.
 
 ## Build and test locally
 
@@ -25,8 +26,9 @@ make run
 ```
 
 This uses [uv](https://docs.astral.sh/uv/) to set up a virtual environment, installs dependencies, builds the theme, builds the documentation,
-and serves it locally. Content edits rebuild automatically; theme edits usually require
-a full rebuild:
+and serves it locally. Content and theme edits rebuild automatically; SCSS changes
+are compiled before the rebuild. See {doc}`content/preview-workflow` for details.
+If you change dependencies or need to reset a stale build, use:
 
 ```shell
 make rebuild
@@ -82,7 +84,9 @@ content/myst-cheat-sheet.md
 ```{toctree}
 :hidden:
 :caption: Ulwazi documentation
+content/configuration
 content/contribute
+content/preview-workflow
 content/tests/index
 Use Ulwazi in your documentation <https://documentation.ubuntu.com/sphinx-stack/latest/contribute/test-ulwazi-theme/>
 ```

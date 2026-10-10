@@ -5,6 +5,12 @@ It defines **what** we test, **why** we test it, and **how** the tests are
 organised, so that every contributor understands the goals and can help move
 towards them.
 
+```{note}
+This page is a design document: it describes the testing we aim for, not the
+tests that exist today. For the tests actually implemented, what each one
+verifies, and how to run them, see {doc}`tests/index`.
+```
+
 This is a target to aim for, not a detailed implementation plan.
 Some of the tests described here already exist; others are planned work that
 aligns with the goals in the [roadmap](roadmap.md).
@@ -129,7 +135,7 @@ Main features to cover:
   inline code.
 - **Tables of contents** -- global navigation tree, local (on-page) TOC, and TOC
   depth truncation.
-- **Tabs** -- `sphinx-tabs` rendering and synced tabs.
+- **Tabs** -- `sphinx-design` rendering, tab selection, and synchronisation.
 - **Typography** -- paragraph text, headings, lists, and blockquotes match the
   Vanilla Framework design tokens.
 - **Breadcrumbs** -- breadcrumb navigation reflects the page hierarchy.
@@ -165,14 +171,23 @@ browsers.
 These tests use Playwright to load the built site in a real browser and check
 layout, computed styles, and interactive behaviour.
 
+These broad screen classes follow the main Vanilla layout breakpoints. Each
+required class has one representative test width; the large-desktop width is
+an optional goal. Component-specific breakpoints are not all covered.
+
+| Screen class  | Width range    | Tested at | Required |
+| ------------- | -------------- | --------- | -------- |
+| Mobile        | below 620 px   | 375 px    | Yes      |
+| Tablet        | 620 to 1035 px | 768 px    | Yes      |
+| Desktop       | 1036 to 1680 px | 1280 px  | Yes      |
+| Large desktop | 1681 px and up | 1920 px   | Optional |
+
 What to check:
 
-- **Mobile** (375 px width) -- navigation collapses, content reflows, no
-  horizontal scroll.
-- **Tablet** (768 px) -- layout adjusts correctly, side navigation behaves.
-- **Desktop** (1280 px) -- full layout with side navigation and local TOC.
-- **Large desktop** (1920 px) -- typography and spacing match the design
-  specification.
+- **Mobile** -- navigation collapses, content reflows, no horizontal scroll.
+- **Tablet** -- layout adjusts correctly, side navigation behaves.
+- **Desktop** -- full layout with side navigation and local TOC.
+- **Large desktop** -- typography and spacing match the design specification.
 - **Theme toggle** -- light/dark mode toggle works and persists.
 - **Keyboard navigation** -- focus styles are visible and logical.
 - **Cross-browser** -- run key visual checks in Chromium and Firefox.
@@ -188,7 +203,7 @@ build and test suite pass on every supported Python version.
 What to check:
 
 - Build and test on all supported Python versions (currently 3.10 through
-  3.13).
+  3.14).
 - Build on Ubuntu (the primary CI platform) and macOS (for local development).
 - Verify that the `uv.lock` file is in sync with `pyproject.toml`
   (`make lint-uv-lockfile`).
@@ -265,7 +280,14 @@ To run only the slow tests:
 make test-slow
 ```
 
-To run all tests (fast and slow) together with a coverage report:
+To run all tests (fast and slow):
+
+```shell
+make test-all
+```
+
+To run fast tests plus the designated browser and style checks with a coverage
+report (not the entire slow suite):
 
 ```shell
 make test-coverage
@@ -307,6 +329,12 @@ what a good test in this project looks like:
 - [ ] It is marked `slow` if it needs extra system dependencies (e.g., LaTeX,
       Playwright) or takes long to run; otherwise it stays in the fast
       tier.
+- [ ] It groups related checks within a test when practical, but preserves
+  independent test cases (for example, parametrized environments).
+  The terminal recap reports one line per category with separate statuses
+  for its selected fast and slow tiers, while individual
+  failures still identify their test and checked page or part. See the
+      {ref}`test output convention <test-output-convention>`.
 - [ ] It uses the right tool for the layer: Beautiful Soup for HTML structure,
       Playwright for rendered appearance and interaction.
 - [ ] If it tests output processed by the theme's Python code (for example, the
