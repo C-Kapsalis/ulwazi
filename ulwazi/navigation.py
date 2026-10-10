@@ -18,9 +18,13 @@
 
 import functools
 from typing import Any, cast
+from urllib.parse import urlsplit
 
 from bs4 import BeautifulSoup, Tag
 from bs4.element import AttributeValueList, PageElement
+from sphinx.util import logging as sphinx_logging
+
+logger = sphinx_logging.getLogger(__name__)
 
 
 def _strip_code_tags_from_element(element: Tag) -> None:
@@ -172,6 +176,79 @@ def get_navigation_tree(toctree_html: str) -> str:
     return str(soup)
 
 
+def validate_help_links(help_links: Any) -> dict[str, Any] | None:
+    """Normalise the conf.py ``html_context["help_links"]`` value.
+
+    ``None``, ``False``, or an empty mapping mean the block is off. A
+    configured value must be a mapping with a non-empty string ``title`` and
+    a non-empty list of ``links``; each link needs non-empty string ``text``
+    and an absolute ``http(s)`` URL. Any malformed value is rejected as a
+    whole (never partially rendered) with a specific warning naming the
+    offending key or index.
+
+    :param help_links: The raw ``html_context`` value from conf.py
+
+    :returns: A fresh normalised ``{"title": str, "links": [...]}`` mapping,
+        or ``None`` when the block is off or the value is invalid
+    """
+    if not help_links or help_links is True:
+        return None
+
+    if not isinstance(help_links, dict):
+        _warn_help_links(f"expected a mapping, got {type(help_links).__name__}")
+        return None
+
+    help_links_typed = cast("dict[str, Any]", help_links)
+    title = help_links_typed.get("title")
+    if not isinstance(title, str) or not title.strip():
+        _warn_help_links("'title' must be a non-empty string")
+        return None
+
+    raw_links = help_links_typed.get("links")
+    if not isinstance(raw_links, list) or not raw_links:
+        _warn_help_links("'links' must be a non-empty list")
+        return None
+
+    links = cast("list[Any]", raw_links)
+    normalised_links: list[dict[str, str]] = []
+    for index, link in enumerate(links):
+        if not isinstance(link, dict):
+            _warn_help_links(f"links[{index}] must be a mapping")
+            return None
+        link_typed = cast("dict[str, Any]", link)
+        text = link_typed.get("text")
+        if not isinstance(text, str) or not text.strip():
+            _warn_help_links(f"links[{index}]['text'] must be a non-empty string")
+            return None
+        url = link_typed.get("url")
+        if not isinstance(url, str) or not url.strip():
+            _warn_help_links(f"links[{index}]['url'] must be a non-empty string")
+            return None
+        if not _is_safe_url(url):
+            _warn_help_links(
+                f"links[{index}]['url'] must be an absolute http(s) URL, got {url!r}"
+            )
+            return None
+        normalised_links.append({"text": text, "url": url})
+
+    return {"title": title, "links": normalised_links}
+
+
+def _is_safe_url(url: str) -> bool:
+    """Accept only absolute http/https URLs with a hostname."""
+    parts = urlsplit(url.strip())
+    return parts.scheme in ("http", "https") and bool(parts.netloc)
+
+
+def _warn_help_links(message: str) -> None:
+    """Emit one actionable build warning for an invalid help_links value."""
+    logger.warning(
+        f"html_context['help_links'] is invalid and will be ignored: {message}. "
+        "See the 'Get help links' section of the Ulwazi configuration docs "
+        "for the expected shape.",
+    )
+
+
 def add_help_links(navigation_html: str, help_links: dict[str, Any] | None) -> str:
     """Append the conf.py-configured "Get help" links after the navigation tree.
 
@@ -184,9 +261,7 @@ def add_help_links(navigation_html: str, help_links: dict[str, Any] | None) -> s
 
     soup = BeautifulSoup(navigation_html, "html.parser")
 
-    container = soup.new_tag(
-        "div", attrs={"class": "p-help-links p-help-links--match-globaltoc"}
-    )
+    container = soup.new_tag("div", attrs={"class": "p-help-links"})
 
     # Mirror the markup Sphinx emits for a toctree :caption: so the heading picks
     # up the theme's own .caption styling instead of restating it here.
@@ -200,13 +275,13 @@ def add_help_links(navigation_html: str, help_links: dict[str, Any] | None) -> s
     heading.append(caption_text)
     container.append(heading)
 
-    link_list = soup.new_tag("ul", attrs={"class": "p-list"})
+    link_list = soup.new_tag("ul", attrs={"class": "p-help-links__list"})
     for link in help_links["links"]:
-        item = soup.new_tag("li", attrs={"class": "p-list__item"})
+        item = soup.new_tag("li", attrs={"class": "p-help-links__item"})
         anchor = soup.new_tag(
             "a",
             attrs={
-                "class": "p-link--soft p-text--small u-no-margin--bottom",
+                "class": "p-help-links__link",
                 "href": link["url"],
             },
         )
@@ -215,8 +290,6 @@ def add_help_links(navigation_html: str, help_links: dict[str, Any] | None) -> s
         link_list.append(item)
     container.append(link_list)
 
-    aside = soup.new_tag("aside")
-    aside.append(container)
-    soup.append(aside)
+    soup.append(container)
 
     return str(soup)

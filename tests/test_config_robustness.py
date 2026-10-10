@@ -60,6 +60,17 @@ EXPECTED_CONTEXT = {
         "license": True,
         "entries": ['<a href="https://example.com/support">Maximum support</a>'],
     },
+    # Opt-in Get help panel: rendered behaviour is asserted separately.
+    "help_links": {
+        "title": "Get help",
+        "links": [
+            {"text": "Ask on the forum", "url": "https://forum.example.com/maximum"},
+            {
+                "text": "Report a doc issue",
+                "url": f"{REPOSITORY}/issues/new",
+            },
+        ],
+    },
     # Reserved settings: verify preservation only, not rendered behavior.
     "product_tag": "_static/maximum-tag.svg",
     "github_issues": "disabled",
@@ -266,6 +277,33 @@ def _check_maximum_feedback(page: BeautifulSoup, output: Path) -> None:
     )
 
 
+def _check_maximum_help_links(page: BeautifulSoup) -> None:
+    """The configured Get help panel renders, without toctree link classes."""
+    panel = page.select_one("nav#drawer div.p-help-links")
+    assert panel is not None, "Get help panel missing from the side navigation"
+    heading = panel.select_one("p.caption span.caption-text")
+    assert heading is not None, "Get help panel heading missing"
+    assert heading.get_text(strip=True) == "Get help"
+    links = panel.select("ul.p-help-links__list li.p-help-links__item a.p-help-links__link")
+    assert len(links) == 2, "Expected the two configured help links"
+    assert links[0].get("href") == "https://forum.example.com/maximum"
+    assert links[0].get_text(strip=True) == "Ask on the forum"
+    assert links[1].get("href") == f"{REPOSITORY}/issues/new"
+    assert links[1].get_text(strip=True) == "Report a doc issue"
+    for link in links:
+        # Help links are external resources, not toctree entries: they must
+        # not pick up navigation-link or current-page classes.
+        classes = link.get("class", [])
+        assert "p-side-navigation__link" not in classes
+        assert "is-active" not in classes
+        assert link.get("aria-current") is None
+
+
+def _check_no_help_links(page: BeautifulSoup) -> None:
+    """Without configuration, no Get help panel renders."""
+    assert page.select_one("nav#drawer div.p-help-links") is None
+
+
 def _check_maximum_footer(page: BeautifulSoup) -> None:
     footer = page.select_one('footer nav[aria-label="Footer"]')
     assert footer is not None
@@ -338,6 +376,9 @@ def test_config_robustness(tmp_path: Path) -> None:
             "TOC unset",
             lambda: _check_depth(minimal[1], minimal[2], includes_h5=False),
         )
+        _record(
+            errors, "help links unset", lambda: _check_no_help_links(_page(minimal[1]))
+        )
 
     for label, value in (("None", None), ("-1", -1)):
         result = run_build(
@@ -376,6 +417,9 @@ def test_config_robustness(tmp_path: Path) -> None:
                 errors, "maximum navigation", lambda: _check_maximum_navigation(page)
             )
             _record(
+                errors, "maximum help links", lambda: _check_maximum_help_links(page)
+            )
+            _record(
                 errors,
                 "maximum feedback",
                 lambda: _check_maximum_feedback(page, maximum[1]),
@@ -397,3 +441,92 @@ def test_config_robustness(tmp_path: Path) -> None:
     assert not errors, "Configuration robustness checks failed:\n  - " + "\n  - ".join(
         errors
     )
+
+
+@pytest.mark.parametrize(
+    ("help_links", "expected_warning"),
+    [
+        # Missing keys
+        ({"title": "Get help"}, "'links'"),
+        ({"links": [{"text": "a", "url": "https://example.com"}]}, "'title'"),
+        # Empty values
+        ({"title": "  ", "links": [{"text": "a", "url": "https://example.com"}]}, "'title'"),
+        ({"title": "Get help", "links": []}, "'links'"),
+        # Malformed links
+        (
+            {"title": "Get help", "links": [{"text": "a"}]},
+            "'url'",
+        ),
+        (
+            {"title": "Get help", "links": [{"url": "https://example.com"}]},
+            "'text'",
+        ),
+        # Unsafe or non-absolute URLs
+        (
+            {"title": "Get help", "links": [{"text": "a", "url": "javascript:alert(1)"}]},
+            "http(s)",
+        ),
+        (
+            {"title": "Get help", "links": [{"text": "a", "url": "/relative/path"}]},
+            "http(s)",
+        ),
+        # Wrong types
+        ("Get help", "mapping"),
+        ([{"text": "a", "url": "https://example.com"}], "mapping"),
+    ],
+)
+def test_help_links_invalid_config(
+    tmp_path: Path, help_links: object, expected_warning: str
+) -> None:
+    """Invalid help_links values warn once and render no panel, without crashing."""
+    import copy
+
+    snapshot = copy.deepcopy(help_links)
+
+    app, output, warnings = _build(
+        "maximum-conf", tmp_path, {"html_context.help_links": help_links}
+    )
+
+    # The build succeeds and warns exactly once, naming the offending key.
+    assert app.statuscode == 0
+    assert "help_links" in warnings
+    assert expected_warning in warnings
+    assert warnings.count("help_links") == 1, (
+        f"Expected exactly one help_links warning, got:\n{warnings}"
+    )
+
+    # No panel renders anywhere.
+    for built in output.glob("**/*.html"):
+        page = BeautifulSoup(built.read_text(encoding="utf-8"), "html.parser")
+        assert page.select_one("div.p-help-links") is None, (
+            f"Get help panel rendered in {built.name} despite invalid config"
+        )
+
+    # The caller's configuration value is not mutated.
+    assert help_links == snapshot
+
+
+def test_help_links_theme_only_loading(tmp_path: Path) -> None:
+    """The panel also renders when Ulwazi is selected only via html_theme."""
+    source = FIXTURES / "maximum-conf"
+    output = tmp_path / "theme-only" / "_build"
+    warnings = io.StringIO()
+    with patch_docutils(str(source)), docutils_namespace():
+        app = Sphinx(
+            srcdir=str(source),
+            confdir=str(source),
+            outdir=str(output),
+            doctreedir=str(tmp_path / "theme-only" / "_doctrees"),
+            buildername="html",
+            # Select the theme only: no "ulwazi" in extensions, so
+            # config-inited never fires and builder-inited must carry it.
+            confoverrides={"extensions": []},
+            status=io.StringIO(),
+            warning=warnings,
+        )
+        app.build()
+    assert app.statuscode == 0, warnings.getvalue()
+    page = _page(output)
+    panel = page.select_one("nav#drawer div.p-help-links")
+    assert panel is not None, "Get help panel missing in theme-only loading"
+    assert panel.select_one("a.p-help-links__link") is not None
